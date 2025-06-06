@@ -46,7 +46,7 @@ return {
 
     providers = {
       gemini = {
-        model = "gemini-1.5-flash",
+        model = "gemini-2.0-flash",
         timeout = 30000,
         use_ReAct_prompt = false, -- Keep this as false
         extra_request_body = {
