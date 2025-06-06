@@ -1,13 +1,8 @@
 -- lua/plugins/avante.lua
-
 return {
   "yetone/avante.nvim",
   event = "VeryLazy",
-  -- This build step is crucial to compile the plugin's Rust components.
-  -- This will fix the "missing avante_templates" error.
-  build = "make", -- For Linux and macOS
-  -- build = "powershell -ExecutionPolicy Bypass -File Build.ps1" -- Uncomment and use this line for Windows
-
+  build = "make",
   dependencies = {
     "nvim-treesitter/nvim-treesitter",
     "nvim-lua/plenary.nvim",
@@ -20,26 +15,52 @@ return {
         file_types = { "markdown", "Avante" },
       },
     },
+    {
+      "HakonHarnes/img-clip.nvim",
+      event = "VeryLazy",
+      opts = {
+        default = {
+          embed_image_as_base64 = false,
+          prompt_for_file_name = false,
+          use_absolute_path = (vim.fn.has("win32") > 0),
+        },
+      },
+    },
   },
 
   opts = {
-    -- Set Gemini as the provider
+    -- You can continue to use Gemini for the main chat/planning phase
     provider = "gemini",
+
+    -- This new provider will be used specifically for the code application step.
+    -- It's recommended to use a powerful model like gpt-4o or claude-3.5-sonnet for reliability.
+    cursor_applying_provider = "gemini",
+
+    behaviour = {
+      -- This is the key change to enable the new mode
+      enable_cursor_planning_mode = true,
+      -- other behaviour settings...
+      auto_set_highlight_group = true,
+      auto_set_keymaps = true,
+    },
+
     providers = {
       gemini = {
-        -- You can change this to other Gemini models like "gemini-1.5-pro"
         model = "gemini-1.5-flash",
         timeout = 30000,
-        use_ReAct_prompt = true,
+        use_ReAct_prompt = false, -- Keep this as false
         extra_request_body = {
           generationConfig = {
             temperature = 0.75,
           },
         },
       },
-      -- You can keep other provider configurations here if you plan to switch between them
+      -- Define the provider for the 'cursor_applying_provider'
       openai = {
         model = "gpt-4o",
+        extra_request_body = {
+          temperature = 0.1, -- A lower temperature is often better for direct code application
+        },
       },
     },
   },
